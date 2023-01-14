@@ -31,22 +31,14 @@ public class Main {
                 }
             }
         }
-
-//        System.out.println("home: " + home);
-//        System.out.println(store);
         List<Integer> current = new ArrayList<>();
         com(0, current, store, M);
-//        System.out.println(choice);
 
         int[][] lengths = new int[home.size()][store.size()];
         for(int i = 0; i < home.size(); i++) {
             for(int j = 0; j < store.size(); j++) {
                 lengths[i][j] = Math.abs(store.get(j).get(0) - home.get(i).get(0)) + Math.abs(store.get(j).get(1) - home.get(i).get(1));
             }
-        }
-
-        for(int[] length:lengths) {
-//            System.out.println(Arrays.toString(length));
         }
 
         int min = 100000;
