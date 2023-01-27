@@ -45,19 +45,10 @@ public class Main {
                     queue.add(-100001);
                     queue.add(level + 1);
                 } else {
-                    if(sum <= S) {
-                        queue.add(sum + lst.get(level));
-                        queue.add(level + 1);
-                        queue.add(sum);
-                        queue.add(level + 1);
-                    } else {
-                        if(lst.get(level) < 0) {
-                            queue.add(sum + lst.get(level));
-                            queue.add(level + 1);
-                            queue.add(sum);
-                            queue.add(level + 1);
-                        }
-                    }
+                    queue.add(sum + lst.get(level));
+                    queue.add(level + 1);
+                    queue.add(sum);
+                    queue.add(level + 1);
                 }
             }
         }
