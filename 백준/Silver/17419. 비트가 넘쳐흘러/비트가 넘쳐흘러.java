@@ -7,12 +7,12 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         int N = Integer.parseInt(br.readLine());
-        int num = Integer.parseInt(br.readLine(), 2);
+        Long num = Long.parseLong(br.readLine(), 2);
 
         int count = 0;
         while(num != 0) {
-            int copy1 = num;
-            int copy2 = num;
+            long copy1 = num;
+            long copy2 = num;
             num = ~num + 1;
             num &= copy1;
             num = copy2 - num;
