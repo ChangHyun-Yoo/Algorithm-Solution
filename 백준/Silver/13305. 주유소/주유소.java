@@ -7,13 +7,13 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
 
-        int[] distance = new int[N - 1];
-        int[] price = new int[N];
-        int[] prefix = new int[N];
+        long[] distance = new long[N - 1];
+        long[] price = new long[N];
+        long[] prefix = new long[N];
 
         StringTokenizer st = new StringTokenizer(br.readLine(), " ");
         for(int i = 0; i < N - 1; i++) {
-            int value = Integer.parseInt(st.nextToken());
+            long value = Long.parseLong(st.nextToken());
             distance[i] = value;
             prefix[i + 1] = value + prefix[i];
         }
@@ -24,7 +24,7 @@ public class Main {
         }
 
         List<Integer> charge = new ArrayList<>();
-        int current = 0;
+        long current = 0;
         for(int i = 0; i < N - 1; i++) {
             if(i == 0) {
                 current = price[i];
@@ -38,10 +38,10 @@ public class Main {
         }
         charge.add(N - 1);
 
-        int answer = 0;
+        long answer = 0;
         for(int i = 0; i < charge.size() - 1; i++) {
             int city = charge.get(i);
-            int pr = price[city];
+            long pr = price[city];
             answer += pr * (prefix[charge.get(i + 1)] - prefix[city]);
         }
 
