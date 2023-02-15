@@ -18,14 +18,12 @@ public class Main {
         int n = Integer.parseInt(br.readLine());
         for(int i = 0; i < n; i++) {
             st = new StringTokenizer(br.readLine(), " ");
-            int idx = Integer.parseInt(st.nextToken());
-            int value = Integer.parseInt(st.nextToken());
-            cube[idx] = value;
+            cube[Integer.parseInt(st.nextToken())] = Integer.parseInt(st.nextToken());
         }
 
         dq(length, width, height);
 
-        if(!check)
+        if(check)
             System.out.println(-1);
         else
             System.out.println(answer);
@@ -44,24 +42,28 @@ public class Main {
         }
         max /= 2;
         index--;
-        check = false;
+
         while(index >= 0) {
             if(cube[index] > 0) {
                 cube[index]--;
                 answer++;
-                check = true;
-                break;
+                dq(max, max, height - max);
+                if(width > length) {
+                    dq(length, width - max, height);
+                    dq(length - max, max, height);
+                } else {
+                    dq(max, width - max, height);
+                    dq(length - max, width, height);
+                }
+                return;
             }
             max /= 2;
             index--;
         }
-        
-        if(!check)
+        if(index == -1) {
+            check = true;
             return;
-        
-        dq(max, width - max, max);
-        dq(length - max, width, max);
-        dq(length, width, height - max);
+        }
     }
 
 }
