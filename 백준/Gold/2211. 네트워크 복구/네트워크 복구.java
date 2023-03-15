@@ -52,8 +52,8 @@ public class Main {
         min[1] = 0;
         while(!pq.isEmpty()) {
             Node now = pq.poll();
-            if(visited[now.num]) continue;
-            visited[now.num] = true;
+            if(now.dis > min[now.num])
+                continue;
             for(Node next: roads.get(now.num)) {
                 if(min[next.num] > min[now.num] + next.dis) {
                     min[next.num] = min[now.num] + next.dis;
