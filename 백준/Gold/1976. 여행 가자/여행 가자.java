@@ -21,7 +21,7 @@ public class Main {
         for(int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine(), " ");
             for(int j = 0; j < N; j++) {
-                if(Integer.parseInt(st.nextToken()) == 1) {
+                if(Integer.parseInt(st.nextToken()) == 1 && j > i) {
                     union(i + 1, j + 1);
                 }
             }
