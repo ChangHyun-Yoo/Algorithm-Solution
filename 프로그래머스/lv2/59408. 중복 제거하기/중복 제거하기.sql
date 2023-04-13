@@ -1,0 +1,1 @@
+select count(*) from (SELECT name as name from animal_ins where name is not null group by name) as a
