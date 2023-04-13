@@ -1,0 +1,2 @@
+-- 코드를 입력하세요
+select hour, count(hour) from (SELECT cast(if(left(substring(datetime, 12, 2), 1) = '0', substring(datetime, 13, 1), substring(datetime, 12, 2)) as unsigned) as 'hour' from animal_outs where substring(datetime, 12, 2)) as a where hour >= 9 and hour <= 19 group by hour order by hour
