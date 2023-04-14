@@ -1,0 +1,2 @@
+-- 코드를 입력하세요
+select b.category, sum(s.sales) from (SELECT book_id, sum(sales) as 'sales' from book_sales where left(sales_date, 7) = '2022-01' group by book_id) s left join book b on b.book_id = s.book_id group by b.category order by b.category
