@@ -1,0 +1,2 @@
+-- 코드를 입력하세요
+SELECT o.animal_id, o.animal_type, o.name from animal_outs o left join animal_ins i on o.animal_id = i.animal_id where (left(o.sex_upon_outcome, 6) = 'Spayed' or left(o.sex_upon_outcome, 8) = 'Neutered') and left(i.sex_upon_intake, 6) = 'Intact' order by o.animal_id
