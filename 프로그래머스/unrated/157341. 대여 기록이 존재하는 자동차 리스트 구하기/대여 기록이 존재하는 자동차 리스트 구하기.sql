@@ -1,0 +1,2 @@
+-- 코드를 입력하세요
+select a.car_id from (SELECT car_id, sum(if(left(start_date, 7) = '2022-10', 1, 0)) as 'c' from car_rental_company_rental_history group by car_id) a left join car_rental_company_car s on a.car_id = s.car_id where s.car_type = '세단' and a.c > 0 order by a.car_id desc
