@@ -13,7 +13,7 @@ public class Main {
 
         N = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
-        min = new int[200001];
+        min = new int[100001];
         Arrays.fill(min, Integer.MAX_VALUE);
         min[N] = 0;
 
@@ -26,7 +26,7 @@ public class Main {
             if(now.time > min[now.place]) continue;
 
             now.time = min[now.place];
-            if(now.place != 200000) {
+            if(now.place != 100000) {
                 if(min[now.place + 1] > now.time + 1) {
                     min[now.place + 1] = now.time + 1;
                     pq.offer(new Info(now.place + 1, now.time + 1));
@@ -38,7 +38,7 @@ public class Main {
                     pq.offer(new Info(now.place - 1, now.time + 1));
                 }
             }
-            if(now.place <= 100000) {
+            if(now.place <= 50000) {
                 if(min[now.place * 2] > now.time) {
                     min[now.place * 2] = now.time;
                     pq.offer(new Info(now.place * 2, now.time));
