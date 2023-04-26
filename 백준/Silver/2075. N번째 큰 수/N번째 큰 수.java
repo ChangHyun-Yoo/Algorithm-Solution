@@ -7,16 +7,18 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
 
-        int[] lst = new int[N * N];
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
 
         for(int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine(), " ");
             for(int j = 0; j < N; j++) {
-                lst[N * i + j] = Integer.parseInt(st.nextToken());
+                pq.offer(Integer.parseInt(st.nextToken()));
             }
         }
 
-        Arrays.sort(lst);
-        System.out.println(lst[N * N - N]);
+        for(int i = 0; i < N - 1; i++) {
+            pq.poll();
+        }
+        System.out.println(pq.peek());
     }
 }
