@@ -44,6 +44,7 @@ public class Main {
             }
         }
 
+        StringBuilder sb = new StringBuilder();
         for(int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine(), " ");
 
@@ -52,11 +53,12 @@ public class Main {
             int C = Integer.parseInt(st.nextToken());
 
             if(min[A][B] <= C) {
-                System.out.println("Enjoy other party");
+                sb.append("Enjoy other party\n");
             } else {
-                System.out.println("Stay here");
+                sb.append("Stay here\n");
             }
         }
+        System.out.println(sb);
     }
 
     static class Node implements Comparable<Node> {
