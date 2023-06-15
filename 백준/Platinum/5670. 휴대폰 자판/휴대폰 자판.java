@@ -36,6 +36,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+        StringBuilder sb = new StringBuilder();
         String s = null;
         while((s = br.readLine()) != null) {
             int n = Integer.parseInt(s);
@@ -49,10 +50,10 @@ public class Main {
 
             dfs(trie.root, 0);
 
-            System.out.println(String.format("%.2f", count / (double) n));
+            sb.append(String.format("%.2f", count / (double) n)).append('\n');
         }
 
-
+        System.out.println(sb);
     }
 
     static void dfs(TrieNode now, int t) {
