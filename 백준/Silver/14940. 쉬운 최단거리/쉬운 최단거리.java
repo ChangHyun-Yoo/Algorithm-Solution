@@ -54,10 +54,18 @@ public class Main {
 
                 time[now.x][now.y] = now.time;
 
-                q.offer(new Node(now.x - 1, now.y, now.time + 1));
-                q.offer(new Node(now.x + 1, now.y, now.time + 1));
-                q.offer(new Node(now.x, now.y - 1, now.time + 1));
-                q.offer(new Node(now.x, now.y + 1, now.time + 1));
+                if(now.x > 0)
+                    if(!visited[now.x - 1][now.y])
+                        q.offer(new Node(now.x - 1, now.y, now.time + 1));
+                if(now.x < n - 1)
+                    if(!visited[now.x + 1][now.y])
+                        q.offer(new Node(now.x + 1, now.y, now.time + 1));
+                if(now.y > 0)
+                    if(!visited[now.x][now.y - 1])
+                        q.offer(new Node(now.x, now.y - 1, now.time + 1));
+                if(now.y < m - 1)
+                    if(!visited[now.x][now.y + 1])
+                        q.offer(new Node(now.x, now.y + 1, now.time + 1));
             }
         }
 
