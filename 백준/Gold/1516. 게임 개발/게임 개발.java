@@ -37,20 +37,20 @@ public class Main {
             before[i] = b;
         }
 
-        Queue<Node> q = new LinkedList<>();
+        Queue<Integer> q = new LinkedList<>();
         for(int i = 1; i < before.length; i++) {
-            if(before[i] == 0) q.offer(new Node(i, time[i]));
+            if(before[i] == 0) q.offer(i);
         }
         while(!q.isEmpty()) {
-            Node now = q.poll();
+            int now = q.poll();
 
-            answer[now.x] = Math.max(answer[now.x], now.time);
-            for(int next: nexts.get(now.x)) {
+            answer[now] = Math.max(answer[now], time[now]);
+            for(int next: nexts.get(now)) {
                 before[next]--;
-                answer[next] = Math.max(answer[next], answer[now.x] + time[next]);
+                answer[next] = Math.max(answer[next], answer[now] + time[next]);
 
                 if(before[next] == 0) {
-                    q.offer(new Node(next, now.time + time[next]));
+                    q.offer(next);
                 }
             }
         }
@@ -60,15 +60,5 @@ public class Main {
             sb.append(answer[i]).append('\n');
         }
         System.out.println(sb);
-    }
-
-    static class Node {
-        int x;
-        int time;
-
-        public Node(int x, int time) {
-            this.x = x;
-            this.time = time;
-        }
     }
 }
