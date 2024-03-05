@@ -1,60 +1,62 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    static List<List<Integer>> connections = new ArrayList<>();
-    static int[][] min;
+    static List<List<Integer>> roads;
     static boolean[] visited;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         int N = Integer.parseInt(br.readLine());
-
-        for(int i = 0; i < N + 1; i++) {
-            connections.add(new ArrayList<>());
+        roads = new ArrayList<>();
+        for (int i = 0; i < N + 1; i++) {
+            roads.add(new ArrayList<>());
         }
-        min = new int[N + 1][2];
-        for(int[] m: min) {
-            Arrays.fill(m, Integer.MAX_VALUE);
-        }
-
-        for(int i = 0; i < N - 1; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            connections.get(a).add(b);
-            connections.get(b).add(a);
-        }
-
         visited = new boolean[N + 1];
-        dfs(1);
-        System.out.println(Math.min(min[1][1], min[1][0]));
+
+        for (int i = 0; i < N - 1; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+
+            roads.get(u).add(v);
+            roads.get(v).add(u);
+        }
+
+        int[] result = dfs(1);
+
+        System.out.println(Math.min(result[0], result[1]));
     }
 
-    static void dfs(int i) {
-        visited[i] = true;
+    static int[] dfs(int c) {
+        visited[c] = true;
+        int[] result = new int[2];
 
-        int count = 0;
-        int trues = 0;
-        int com = 0;
-        for(int next: connections.get(i)) {
-            if(!visited[next]) {
-                dfs(next);
-                trues += min[next][1];
-                com += Math.min(min[next][0], min[next][1]);
-                count++;
-            }
+        int num = 0;
+        for(int i = 0; i < roads.get(c).size(); i++) {
+            int next = roads.get(c).get(i);
+            if(!visited[next]) num++;
         }
 
-        if(count == 0) {
-            min[i][1] = 1;
-            min[i][0] = 0;
+        if(num == 0) {
+            result[0] = 0;
+            result[1] = 1;
         } else {
-            min[i][1] = com + 1;
-            min[i][0] = trues;
+            int no = 0;
+            int yes = 0;
+            for(int i = 0; i < roads.get(c).size(); i++) {
+                int next = roads.get(c).get(i);
+                if(!visited[next]) {
+                    int[] r = dfs(next);
+                    no += r[1];
+                    yes += Math.min(r[0], r[1]);
+                }
+            }
+            result[0] = no;
+            result[1] = yes + 1;
         }
+        return result;
     }
 }
-
