@@ -3,7 +3,6 @@ import java.io.*;
 
 public class Main {
 
-    static List<List<Node>> roads = new ArrayList<>();
     static int[][] min;
 
     public static void main(String[] args) throws IOException {
@@ -11,12 +10,12 @@ public class Main {
 
         int n = Integer.parseInt(br.readLine());
         int m = Integer.parseInt(br.readLine());
-        for(int i = 0; i < n + 1; i++) {
-            roads.add(new ArrayList<>());
-        }
         min = new int[n + 1][n + 1];
         for(int[] mm: min) {
             Arrays.fill(mm, Integer.MAX_VALUE);
+        }
+        for(int i = 1; i < n + 1; i++) {
+            min[i][i] = 0;
         }
 
         for(int i = 0; i < m; i++) {
@@ -25,24 +24,14 @@ public class Main {
             int e = Integer.parseInt(st.nextToken());
             int d = Integer.parseInt(st.nextToken());
 
-            roads.get(s).add(new Node(e, d));
+            min[s][e] = Math.min(min[s][e], d);
         }
 
-        for(int i = 1; i < n + 1; i++) {
-
-            PriorityQueue<Node> pq = new PriorityQueue<>();
-            pq.offer(new Node(i, 0));
-
-            while(!pq.isEmpty()) {
-                Node now = pq.poll();
-
-                if(min[i][now.num] < now.dis) continue;
-                min[i][now.num] = now.dis;
-
-                for(Node next: roads.get(now.num)) {
-                    if(min[i][next.num] > min[i][now.num] + next.dis) {
-                        min[i][next.num] = min[i][now.num] + next.dis;
-                        pq.offer(new Node(next.num, min[i][next.num]));
+        for(int k = 1; k < n + 1; k++) {
+            for(int i = 1; i < n + 1; i++) {
+                for(int j = 1; j < n + 1; j++) {
+                    if(min[i][k] != Integer.MAX_VALUE && min[k][j] != Integer.MAX_VALUE) {
+                        min[i][j] = Math.min(min[i][j], min[i][k] + min[k][j]);
                     }
                 }
             }
@@ -57,19 +46,5 @@ public class Main {
             sb.append('\n');
         }
         System.out.print(sb);
-    }
-
-    static class Node implements Comparable<Node> {
-        int num;
-        int dis;
-
-        public Node(int num, int dis) {
-            this.num = num;
-            this.dis = dis;
-        }
-
-        public int compareTo(Node n) {
-            return this.dis - n.dis;
-        }
     }
 }
