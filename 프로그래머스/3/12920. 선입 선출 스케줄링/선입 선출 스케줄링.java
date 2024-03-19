@@ -5,7 +5,7 @@ class Solution {
         if(cores.length >= n) return cores[n - 1];
         
         int low = 0;
-        int high = 500000001;
+        int high = 100000001;
         
         while(low < high) {
             int mid = low + (high - low) / 2;
