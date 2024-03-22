@@ -1,11 +1,7 @@
 import java.util.*;
 class Solution {
     
-    static int installedNum = 0;
-    static boolean[] installed;
-    
     public int solution(int[][] routes) {
-        installed = new boolean[routes.length];
         List<Route> lst = new ArrayList<>();
         for(int[] route: routes) {
             lst.add(new Route(route[0], route[1]));
@@ -14,22 +10,13 @@ class Solution {
         
         int answer = 0;
         
-        while(installedNum < routes.length) {
-            
-            int end = 0;
-            for(int i = 0; i < lst.size(); i++) {
-                if(!installed[i]) {
-                    end = lst.get(i).end;
-                    break;
-                }
+        int max = lst.get(0).end;
+        answer++;
+        for(int i = 0; i < lst.size(); i++) {
+            if(max < lst.get(i).start) {
+                max = lst.get(i).end;
+                answer++;
             }
-            for(int i = 0; i < lst.size(); i++) {
-                if(!installed[i] && lst.get(i).start <= end && lst.get(i).end >= end) {
-                    installed[i] = true;
-                    installedNum++;
-                }
-            }
-            answer++;
         }
         
         return answer;
