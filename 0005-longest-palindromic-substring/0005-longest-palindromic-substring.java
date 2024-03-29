@@ -2,65 +2,31 @@ import java.util.*;
 class Solution {
     
     public String longestPalindrome(String s) {
+        char[] chs = s.toCharArray();
+        boolean[][] dp = new boolean[chs.length][chs.length];
         
         String answer = s.substring(0, 1);
         
-        char[] chs = s.toCharArray();
-        
-        Queue<Integer> odd = new LinkedList<>();
-        for(int i = 1; i < s.length() - 1; i++) {
-            if(chs[i - 1] == chs[i + 1]) {
-                if(answer.length() < 3)
-                    answer = s.substring(i - 1, i + 2);
-                odd.add(i);
-            }
+        for(int i = 0; i < dp.length; i++) {
+            dp[i][i] = true;
         }
-        
-        int index = 2;
-        while(!odd.isEmpty()) {
-            
-            int repeat = odd.size();
-            
-            for(int i = 0; i < repeat; i++) {
-                int poll = odd.poll();
-                
-                if(poll - index < 0 || poll + index >= chs.length) continue;
-                
-                if(chs[poll - index] == chs[poll + index]) {
-                    if(answer.length() < 2 * index + 1)
-                        answer = s.substring(poll - index, poll + index + 1);
-                    odd.add(poll);
-                }
-            }
-            index++;
-        }
-        
-        Queue<Integer> even = new LinkedList<>();
-        for(int i = 0; i < chs.length - 1; i++) {
+        for(int i = 0; i < dp.length - 1; i++) {
             if(chs[i] == chs[i + 1]) {
+                dp[i][i + 1] = true;
                 if(answer.length() < 2)
                     answer = s.substring(i, i + 2);
-                even.add(i);
+            }
+        }
+        for(int i = 2; i < chs.length; i++) {
+            for(int j = 0; j + i < chs.length; j++) {
+                if(chs[j] == chs[j + i] && dp[j + 1][j + i - 1]) {
+                    dp[j][j + i] = true;
+                    if(answer.length() < i + 1)
+                        answer = s.substring(j, j + i + 1);
+                }
             }
         }
         
-        index = 2;
-        while(!even.isEmpty()) {
-            int repeat = even.size();
-
-            for(int i = 0; i < repeat; i++) {
-                int poll = even.poll();
-                
-                if(poll - 1 < 0 || poll + index >= chs.length) continue;
-                
-                if(chs[poll - 1] == chs[poll + index]) {
-                    if(answer.length() < index + 2)
-                        answer = s.substring(poll - 1, poll + index + 1);
-                    even.add(poll - 1);
-                }
-            }
-            index += 2;
-        }
         
         return answer;
     }
