@@ -16,6 +16,8 @@ class Solution {
     
     static void dfs(int current, int tired) {
         
+        if(tired >= min) return;
+        
         // 모든 곡괭이를 사용하면 피로도 최신화
         if(picks[0] == 0 && picks[1] == 0 && picks[2] == 0) {
             min = Math.min(min, tired);
