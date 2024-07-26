@@ -33,12 +33,12 @@ public class Main {
 
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.offer(new Node(1, 0));
+        min[1][0] = 0;
 
         while(!pq.isEmpty()) {
             Node now = pq.poll();
 
             if(now.dis > min[now.x][0]) continue;
-            min[now.x][0] = now.dis;
 
             for(Node next: roads.get(now.x)) {
                 if(min[next.x][0] > now.dis + next.dis) {
@@ -50,13 +50,12 @@ public class Main {
 
         pq.clear();
         pq.offer(new Node(v1, 0));
-        
-        
+        min[v1][1] = 0;
+
         while(!pq.isEmpty()) {
             Node now = pq.poll();
 
             if(now.dis > min[now.x][1]) continue;
-            min[now.x][1] = now.dis;
 
             for(Node next: roads.get(now.x)) {
                 if(min[next.x][1] > now.dis + next.dis) {
@@ -68,11 +67,12 @@ public class Main {
 
         pq.clear();
         pq.offer(new Node(v2, 0));
+        min[v2][2] = 0;
+
         while(!pq.isEmpty()) {
             Node now = pq.poll();
 
             if(now.dis > min[now.x][2]) continue;
-            min[now.x][2] = now.dis;
 
             for(Node next: roads.get(now.x)) {
                 if(min[next.x][2] > now.dis + next.dis) {
