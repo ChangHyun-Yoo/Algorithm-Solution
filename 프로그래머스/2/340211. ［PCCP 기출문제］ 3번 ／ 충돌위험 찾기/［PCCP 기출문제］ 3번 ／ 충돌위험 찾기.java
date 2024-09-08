@@ -1,80 +1,95 @@
 import java.util.*;
+
 class Solution {
+
+    static class Position {
+        int r, c;
+        public Position(int r, int c) {
+            this.r = r;
+            this.c = c;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Position position = (Position) o;
+            return r == position.r && c == position.c;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(r, c);
+        }
+    }
+
     public int solution(int[][] points, int[][] routes) {
         int answer = 0;
-        
-        Queue<Info> q = new LinkedList<>();
-        for(int i = 0; i < routes.length; i++) {
-            q.offer(new Info(i, points[routes[i][0] - 1][0], points[routes[i][0] - 1][1], 0));
+
+        Map<Integer, Position> pointMap = new HashMap<>();
+        for (int i = 0; i < points.length; i++) {
+            pointMap.put(i + 1, new Position(points[i][0], points[i][1]));
         }
-        
-        while(!q.isEmpty()) {
-            int size = q.size();
-            
-            int[][] visited = new int[101][101];
-            
-            for(int i = 0; i < size; i++) {
-                Info now = q.poll();
-                
-                visited[now.x][now.y]++;
-                
-                // 목적지에 도착했으면
-                if(now.x == points[routes[now.i][now.dest] - 1][0] && now.y == points[routes[now.i][now.dest] - 1][1]) {
-                    // 안 끝났으면
-                    if(now.dest != routes[now.i].length - 1) {
-                        now.dest++;
-                        if(now.x < points[routes[now.i][now.dest] - 1][0]) {
-                            now.x++;
-                        } else if(now.x > points[routes[now.i][now.dest] - 1][0]) {
-                            now.x--;
-                        } else {
-                            if(now.y < points[routes[now.i][now.dest] - 1][1]) {
-                                now.y++;
-                            } else {
-                                now.y--;
-                            }
-                        }
-                        q.offer(now);
-                    }
-                }
-                // 목적지에 도착 안했으면
-                else {
-                    if(now.x < points[routes[now.i][now.dest] - 1][0]) {
-                        now.x++;
-                    } else if(now.x > points[routes[now.i][now.dest] - 1][0]) {
-                        now.x--;
-                    } else {
-                        if(now.y < points[routes[now.i][now.dest] - 1][1]) {
-                            now.y++;
-                        } else {
-                            now.y--;
-                        }
-                    }
-                    q.offer(now);
+
+        List<List<Position>> robotPaths = new ArrayList<>();
+
+        for (int[] route : routes) {
+            List<Position> path = new ArrayList<>();
+            Position current = pointMap.get(route[0]);
+            path.add(current);
+
+            for (int j = 1; j < route.length; j++) {
+                Position next = pointMap.get(route[j]);
+                path.addAll(calculatePath(current, next));
+                current = next;
+            }
+
+            robotPaths.add(path);
+        }
+
+        int maxTime = 0;
+        for (List<Position> path : robotPaths) {
+            maxTime = Math.max(maxTime, path.size());
+        }
+
+        for (int t = 0; t < maxTime; t++) {
+            Map<Position, Integer> positionCount = new HashMap<>();
+
+            for (List<Position> path : robotPaths) {
+                if (t < path.size()) {
+                    Position pos = path.get(t);
+                    positionCount.put(pos, positionCount.getOrDefault(pos, 0) + 1);
                 }
             }
-            
-            for(int[] vv: visited) {
-                for(int v: vv) {
-                    if(v > 1) answer++;
+
+            for (int count : positionCount.values()) {
+                if (count > 1) {
+                    answer++;
                 }
             }
         }
-        
+
         return answer;
     }
-    
-    static class Info {
-        int i;
-        int x;
-        int y;
-        int dest;
-        
-        public Info(int i, int x, int y, int dest) {
-            this.i = i;
-            this.x = x;
-            this.y = y;
-            this.dest = dest;
+
+    private List<Position> calculatePath(Position start, Position end) {
+        List<Position> path = new ArrayList<>();
+
+        int r = start.r;
+        int c = start.c;
+
+        while (r != end.r) {
+            if (r < end.r) r++;
+            else r--;
+            path.add(new Position(r, c));
         }
+
+        while (c != end.c) {
+            if (c < end.c) c++;
+            else c--;
+            path.add(new Position(r, c));
+        }
+
+        return path;
     }
 }
