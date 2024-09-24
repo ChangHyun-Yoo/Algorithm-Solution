@@ -39,7 +39,6 @@ public class Main {
                 if(node == null) return false;
             }
 
-            if(node == null) return false;
             return node.isLast;
         }
     }
