@@ -3,31 +3,21 @@ class Solution {
         int answer = 0;
         
         for(long i = l - 1; i <= r - 1; i++) {
-            
-            int nn = n;
-            long div = (long) Math.pow(5, nn - 1);
-            if(i >= div * 2 && i < div * 3) continue;
-            long j = i / div;
-            long ii = i;
-            
-            boolean check = false;
-            while(nn != 1) {
-                nn--;
-                if(ii >= div * 2 && ii < div * 3) {
-                    check = true;
-                    break;
-                }
-                ii = ii - ((ii / div) * div);
-                div /= 5;
-            }
-            
-            if(check) continue;
-            
-            if(ii != 2) {
-                answer++;
-            }
+            answer += check(n, i);
         }
         
         return answer;
+    }
+    
+    // n번째 비트열의 i번째 값
+    static int check(int n, long i) {
+        if(n == 1) {
+            if(i == 2) return 0;
+            else return 1;
+        }
+        
+        long div = (long) Math.pow(5, n - 1);
+        if(div * 2 <= i && i < div * 3) return 0;
+        else return check(n - 1, i % div);
     }
 }
