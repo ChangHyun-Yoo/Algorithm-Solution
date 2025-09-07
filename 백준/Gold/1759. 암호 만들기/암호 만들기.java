@@ -1,60 +1,59 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    private static List<String> cand = new ArrayList<>();
-    private static int L;
+    static int L;
+    static int C;
+    static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
         L = Integer.parseInt(st.nextToken());
-        int C = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
 
-        List<String> ch = new ArrayList<>();
+        char[] chs = new char[C];
 
         st = new StringTokenizer(br.readLine(), " ");
+
         for(int i = 0; i < C; i++) {
-            ch.add(st.nextToken());
+            chs[i] = st.nextToken().charAt(0);
         }
+        Arrays.sort(chs);
+        List<Character> result = new ArrayList<>();
 
-        Collections.sort(ch);
-        backtracking(0, "", 0, 0, ch);
+        dfs(0, chs, result);
 
-        StringBuilder sb = new StringBuilder();
-        for(String s: cand)
-            sb.append(s).append('\n');
-        System.out.println(sb);
+        System.out.print(sb);
     }
 
-    public static void backtracking(int current, String made, int ja, int mo, List<String> ch) {
-        if(made.length() == L) {
-            if(ja >= 2 && mo >= 1) {
-                cand.add(made);
+    static void dfs(int current, char[] chs, List<Character> result) {
+        if(result.size() == L) {
+            // 자음, 모음 체크 후 맞으면 정답에 추가
+            StringBuilder now = new StringBuilder();
+            int mo = 0;
+            int ja = 0;
+            for(char c: result) {
+                if(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') mo++;
+                else ja++;
+                now.append(c);
             }
-        } else if(ch.size() - current == L - made.length()) {
-            int jj = ja;
-            int mm = mo;
-            String mmm = made;
-            for(int i = current; i < ch.size(); i++) {
-                if(ch.get(i).equals("a") || ch.get(i).equals("e") || ch.get(i).equals("i") || ch.get(i).equals("o") || ch.get(i).equals("u")) {
-                    mm++;
-                } else {
-                    jj++;
-                }
-                mmm += ch.get(i);
+
+            if(mo >= 1 && ja >= 2) {
+                sb.append(now.toString());
+                sb.append('\n');
             }
-            if(jj >= 2 && mm >= 1)
-                cand.add(mmm);
-        } else {
-            if(ch.get(current).equals("a") || ch.get(current).equals("e") || ch.get(current).equals("i") || ch.get(current).equals("o") || ch.get(current).equals("u")) {
-                backtracking(current + 1, made + ch.get(current), ja, mo + 1, ch);
-            } else {
-                backtracking(current + 1, made + ch.get(current), ja + 1, mo, ch);
-            }
-            backtracking(current + 1, made, ja, mo, ch);
+            return;
         }
+
+        if(current == C) return;
+
+        result.add(chs[current]);
+        dfs(current + 1, chs, result);
+        result.remove(result.size() - 1);
+
+        dfs(current + 1, chs, result);
     }
 }
