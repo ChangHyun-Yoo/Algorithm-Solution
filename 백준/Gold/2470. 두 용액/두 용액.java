@@ -1,42 +1,46 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
+    static StringBuilder sb = new StringBuilder();
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
 
-        int[] lst = new int[N];
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        int N = Integer.parseInt(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int[] nums = new int[N];
+
         for(int i = 0; i < N; i++) {
-            lst[i] = Integer.parseInt(st.nextToken());
+            nums[i] = Integer.parseInt(st.nextToken());
         }
 
-        Arrays.sort(lst);
+        Arrays.sort(nums);
 
-        int answer1 = 0;
-        int answer2 = 0;
+        int left = 0;
+        int right = nums.length - 1;
+
+        int answerLeft = 0;
+        int answerRight = 0;
         int min = Integer.MAX_VALUE;
 
-        int l = 0;
-        int r = N - 1;
-        while(r != l) {
-            int current = lst[l] + lst[r];
+        while(left < right) {
+            int current = nums[right] + nums[left];
 
-            if(min > Math.abs(current)) {
+            if(Math.abs(current) < min) {
                 min = Math.abs(current);
-                answer1 = lst[l];
-                answer2 = lst[r];
+                answerRight = nums[right];
+                answerLeft = nums[left];
             }
 
-            if(current < 0) {
-                l++;
-            } else {
-                r--;
-            }
+            if(current > 0) {
+                right--;
+            } else if(current < 0) {
+                left++;
+            } else break;
         }
 
-        System.out.println(answer1 + " " + answer2);
+        System.out.println(answerLeft + " " + answerRight);
     }
 }
