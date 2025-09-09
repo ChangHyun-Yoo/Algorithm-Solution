@@ -1,52 +1,51 @@
-import java.io.*;
-import java.lang.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         int N = Integer.parseInt(br.readLine());
 
-        Map<Integer, List<Integer>> map = new HashMap<>();
-
-        for(int i = 0; i < N; i++) {
-            map.put(i, new ArrayList<>());
+        List<List<Integer>> roads = new ArrayList<>();
+        for(int i = 0; i < 50; i++) {
+            roads.add(new ArrayList<>());
         }
 
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        int head = -1;
+        StringTokenizer st = new StringTokenizer(br.readLine());
         for(int i = 0; i < N; i++) {
             int num = Integer.parseInt(st.nextToken());
 
             if(num != -1) {
-                List<Integer> l = map.get(num);
-                l.add(i);
-                map.replace(num, l);
+                roads.get(num).add(i);
+            } else {
+                head = i;
             }
         }
 
-        int r = Integer.parseInt(br.readLine());
-        Queue<Integer> queue = new LinkedList<>();
-        queue.add(r);
-
-        while(!queue.isEmpty()) {
-            int q = queue.poll();
-            for(int a: map.get(q)) {
-                queue.add(a);
-            }
-            map.remove(q);
+        int remove = Integer.parseInt(br.readLine());
+        if(remove == head) {
+            System.out.println(0);
+            return;
         }
+
+        Queue<Integer> q = new LinkedList<>();
+        q.add(head);
 
         int answer = 0;
-        for(int s: map.keySet()) {
-            if(map.get(s).contains(r) && map.get(s).size() == 1) {
-                answer++;
-                break;
+        while(!q.isEmpty()) {
+            int current = q.poll();
+
+            int nextNum = 0;
+            for(int next: roads.get(current)) {
+                if(next != remove) {
+                    nextNum++;
+                    q.add(next);
+                }
             }
-        }
-        for(int s: map.keySet()) {
-            if(map.get(s).size() == 0)
-                answer++;
+            if(nextNum == 0) answer++;
         }
 
         System.out.println(answer);
