@@ -3,25 +3,23 @@ import java.io.*;
 
 public class Main {
 
-    static int N;
-    static int M;
-    static int r;
-    static int c;
-    static int d;
-    static int[][] status;
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, 1, -1};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
-        status = new int[N][M];
 
         st = new StringTokenizer(br.readLine());
+
         int r = Integer.parseInt(st.nextToken());
         int c = Integer.parseInt(st.nextToken());
         int d = Integer.parseInt(st.nextToken());
 
+        int[][] status = new int[N][M];
         for(int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for(int j = 0; j < M; j++) {
@@ -30,75 +28,70 @@ public class Main {
         }
 
         int answer = 0;
+
         while(true) {
+            // 1. 현재 칸이 청소 안된 경우 현재 칸 청소
             if(status[r][c] == 0) {
-                status[r][c] = 2;
+                status[r][c] = -1;
                 answer++;
             }
 
-            boolean empty = false;
-            if(r != 0 && status[r - 1][c] == 0) empty = true;
-            if(r != N - 1 && status[r + 1][c] == 0) empty = true;
-            if(c != 0 && status[r][c - 1] == 0) empty = true;
-            if(c != M - 1 && status[r][c + 1] == 0) empty = true;
+            // 빈칸이 있는 경우
+            if(check(r, c, status)) {
+                d = (d + 3) % 4;
 
-            if(!empty) {
-                // 북
+                if(d == 0 && r != 0) {
+                    if(status[r - 1][c] == 0) r--;
+                } else if(d == 1 && c != status[0].length - 1) {
+                    if(status[r][c + 1] == 0) c++;
+                } else if(d == 2 && r != status.length - 1) {
+                    if(status[r + 1][c] == 0) r++;
+                } else if(d == 3 && c != 0) {
+                    if(status[r][c - 1] == 0) c--;
+                }
+            }
+            // 빈칸이 없는 경우
+            else {
                 if(d == 0) {
-                    // 후진 가능하면
-                    if(r != N - 1 && status[r + 1][c] != 1) {
+                    if(r != status.length - 1 && status[r + 1][c] != 1) {
                         r++;
                         continue;
                     } else break;
                 }
-                // 동
-                else if(d == 1) {
-                    // 후진 가능하면
+                if(d == 1) {
                     if(c != 0 && status[r][c - 1] != 1) {
                         c--;
                         continue;
                     } else break;
                 }
-                // 남
-                else if(d == 2) {
-                    // 후진 가능하면
+                if(d == 2) {
                     if(r != 0 && status[r - 1][c] != 1) {
                         r--;
                         continue;
                     } else break;
                 }
-                // 서
-                else {
-                    // 후진 가능하면
-                    if(c != M - 1 && status[r][c + 1] != 1) {
+                if(d == 3) {
+                    if(c != status[0].length - 1 && status[r][c + 1] != 1) {
                         c++;
                         continue;
                     } else break;
                 }
-            } else {
-                if(d == 0) d = 3;
-                else d--;
-                // 북
-                if(d == 0) {
-                    if(r != 0 && status[r - 1][c] == 0) r--;
-                }
-                // 동
-                else if(d == 1) {
-                    if(c != M - 1 && status[r][c + 1] == 0) c++;
-                }
-                // 남
-                else if(d == 2) {
-                    if(r != N - 1 && status[r + 1][c] == 0) r++;
-                }
-                // 서
-                else {
-                    if(c != 0 && status[r][c - 1] == 0) c--;
-                }
             }
         }
+
         System.out.println(answer);
     }
 
+    static boolean check(int r, int c, int[][] status) {
+        for(int i = 0; i < 4; i++) {
+            int nx = r + dx[i];
+            int ny = c + dy[i];
+
+            if(nx >= 0 && nx < status.length && ny >= 0 && ny < status[0].length) {
+                if(status[nx][ny] == 0) return true;
+            }
+        }
+
+        return false;
+    }
 }
-
-
