@@ -1,54 +1,58 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    static List<List<Integer>> order = new ArrayList<>();
-    static int[] beforeNum;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
-        beforeNum = new int[N + 1];
+
+        int[] before = new int[N + 1];
         int[] answer = new int[N + 1];
+        List<List<Integer>> roads = new ArrayList<>();
         for(int i = 0; i < N + 1; i++) {
-            order.add(new ArrayList<>());
+            roads.add(new ArrayList<>());
         }
 
         for(int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine(), " ");
-            int before = Integer.parseInt(st.nextToken());
-            int after = Integer.parseInt(st.nextToken());
-            beforeNum[after] += 1;
-            order.get(before).add(after);
+            st = new StringTokenizer(br.readLine());
+
+            int A = Integer.parseInt(st.nextToken());
+            int B = Integer.parseInt(st.nextToken());
+
+            roads.get(A).add(B);
+            before[B]++;
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+        for(int i = 1; i < before.length; i++) {
+            if(before[i] == 0) q.offer(i);
+        }
+
+        int semester = 1;
+        while(!q.isEmpty()) {
+            int size = q.size();
+
+            for(int i = 0; i < size; i++) {
+                int now = q.poll();
+                answer[now] = semester;
+
+                for(int next: roads.get(now)) {
+                    if(--before[next] == 0) q.offer(next);
+                }
+            }
+
+            semester++;
         }
 
         StringBuilder sb = new StringBuilder();
-        Queue<Integer> q = new LinkedList<>();
-        for(int i = 1; i < N + 1; i++) {
-            if(beforeNum[i] == 0) {
-                q.offer(i);
-                q.offer(1);
-            }
-        }
-        while(!q.isEmpty()) {
-            int sub = q.poll();
-            int sem = q.poll();
-            answer[sub] = sem;
-            for(int s: order.get(sub)) {
-                beforeNum[s] -= 1;
-                if(beforeNum[s] == 0) {
-                    q.offer(s);
-                    q.offer(sem + 1);
-                }
-            }
-        }
         for(int i = 1; i < answer.length; i++) {
-            sb.append(answer[i] + " ");
+            sb.append(answer[i]).append(' ');
         }
-        System.out.println(sb);
+
+        System.out.print(sb.toString());
     }
 }
