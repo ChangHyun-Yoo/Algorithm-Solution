@@ -1,73 +1,66 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    static int[][] dp;
-    static int[][] alt;
-    static int N;
-    static int M;
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-        M = Integer.parseInt(st.nextToken());
-        N = Integer.parseInt(st.nextToken());
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        dp = new int[M][N];
+        int M = Integer.parseInt(st.nextToken());
+        int N = Integer.parseInt(st.nextToken());
 
+        int[][] heights = new int[M][N];
         for(int i = 0; i < M; i++) {
-            Arrays.fill(dp[i], -1);
-        }
-        dp[M - 1][N - 1] = 1;
-        alt = new int[M][N];
-        for(int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine(), " ");
+            st = new StringTokenizer(br.readLine());
             for(int j = 0; j < N; j++) {
-                alt[i][j] = Integer.parseInt(st.nextToken());
+                heights[i][j] = Integer.parseInt(st.nextToken());
             }
         }
 
-        System.out.println(cases(0, 0));
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(0, 0, heights[0][0]));
+
+        int[][] dp = new int[M][N];
+        dp[0][0] = 1;
+
+        while(!pq.isEmpty()) {
+            Node now = pq.poll();
+
+            for(int i = 0; i < 4; i++) {
+                int ni = now.i + dx[i];
+                int nj = now.j + dy[i];
+
+                if(ni >= 0 && ni < M && nj >= 0 && nj < N) {
+                    if(heights[ni][nj] < now.height) {
+                        if(dp[ni][nj] == 0) {
+                            pq.offer(new Node(ni, nj, heights[ni][nj]));
+                        }
+                        dp[ni][nj] += dp[now.i][now.j];
+                    }
+                }
+            }
+        }
+
+        System.out.println(dp[M - 1][N - 1]);
     }
 
-    static int cases(int row, int col) {
+    static class Node implements Comparable<Node> {
+        int i;
+        int j;
+        int height;
 
-        if(dp[row][col] != -1) {
-            return dp[row][col];
+        public Node(int i, int j, int height) {
+            this.i = i;
+            this.j = j;
+            this.height = height;
         }
 
-        //경로가 없을 때
-        int result = 0;
-        try {
-            if(alt[row - 1][col] < alt[row][col]) {
-                result += cases(row - 1, col);
-            }
-        } catch(IndexOutOfBoundsException e) {
-
+        public int compareTo(Node n) {
+            return n.height - this.height;
         }
-        try {
-            if(alt[row + 1][col] < alt[row][col]) {
-                result += cases(row + 1, col);
-            }
-        } catch(IndexOutOfBoundsException e) {
-
-        }
-        try {
-            if(alt[row][col - 1] < alt[row][col]) {
-                result += cases(row, col - 1);
-            }
-        } catch(IndexOutOfBoundsException e) {
-
-        }
-        try {
-            if(alt[row][col + 1] < alt[row][col]) {
-                result += cases(row, col + 1);
-            }
-        } catch(IndexOutOfBoundsException e) {
-
-        }
-        dp[row][col] = result;
-        return result;
     }
 }
