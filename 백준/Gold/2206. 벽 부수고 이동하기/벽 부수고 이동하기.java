@@ -1,147 +1,83 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static List<List<Integer>> col = new ArrayList<>();
+
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
 
-        int[][] info = new int[N][M];
-        boolean[][] visited = new boolean[N][M];
-        boolean[][] visited2 = new boolean[N][M];
-
+        char[][] map = new char[N][M];
         for(int i = 0; i < N; i++) {
-            String line = br.readLine();
+            String input = br.readLine();
             for(int j = 0; j < M; j++) {
-                info[i][j] = Integer.parseInt(line.substring(j, j + 1));
+                map[i][j] = input.charAt(j);
             }
         }
+        boolean[][] visited = new boolean[N][M];
+        boolean[][] visitedBreaked = new boolean[N][M];
 
-        Queue<Integer> queue = new LinkedList<>();
-        queue.add(0);//row
-        queue.add(0);//col
-        queue.add(1);//level
-        queue.add(0);//벽을 깼는지
+        Queue<Node> q = new LinkedList<>();
+        q.offer(new Node(0, 0, 1, false));
         visited[0][0] = true;
 
-        int answer = 0;
-        while(!queue.isEmpty()) {
-            int row = queue.poll();
-            int col = queue.poll();
-            int level = queue.poll();
-            int check = queue.poll();
+        int answer = -1;
 
-            if(row == N-1 && col == M-1) {
-                answer = level;
+        while(!q.isEmpty()) {
+            Node now = q.poll();
+
+            if(now.x == N - 1 && now.y == M - 1) {
+                answer = now.move;
                 break;
             }
 
-            try {
-                if(info[row+1][col] == 1 && check == 0 && !visited[row+1][col]) {//벽이고 깬적 없으면
-                    queue.add(row+1);
-                    queue.add(col);
-                    queue.add(level + 1);
-                    queue.add(check + 1);
-                    visited[row+1][col] = true;
-                } else if(info[row+1][col] == 0 && check == 0 && !visited[row+1][col]) {
-                    queue.add(row+1);
-                    queue.add(col);
-                    queue.add(level + 1);
-                    queue.add(check);
-                    visited[row+1][col] = true;
-                } else if(info[row+1][col] == 0 && check == 1 && !visited2[row+1][col]) {
-                    queue.add(row+1);
-                    queue.add(col);
-                    queue.add(level + 1);
-                    queue.add(check);
-                    visited2[row+1][col] = true;
+            for(int i = 0; i < 4; i++) {
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
+
+                if(nx >= 0 && nx < N && ny >= 0 && ny < M) {
+                    if(!visitedBreaked[nx][ny]) {
+                        if(map[nx][ny] == '1' && !now.breaked) {
+                            q.offer(new Node(nx, ny, now.move + 1, true));
+                            visitedBreaked[nx][ny] = true;
+                        }
+
+                        if(map[nx][ny] == '0' && now.breaked) {
+                            q.offer(new Node(nx, ny, now.move + 1, now.breaked));
+                            visitedBreaked[nx][ny] = true;
+                        }
+                    }
+
+                    if(!visited[nx][ny]) {
+                        if(map[nx][ny] == '0' && !now.breaked) {
+                            q.offer(new Node(nx, ny, now.move + 1, now.breaked));
+                            visited[nx][ny] = true;
+                        }
+                    }
                 }
-            } catch(Exception e) {
-
-            }
-
-            try {
-                if(info[row-1][col] == 1 && check == 0 && !visited[row-1][col]) {//벽이고 깬적 없으면
-                    queue.add(row-1);
-                    queue.add(col);
-                    queue.add(level + 1);
-                    queue.add(check + 1);
-                    visited[row-1][col] = true;
-                } else if(info[row-1][col] == 0 && check == 0 && !visited[row-1][col]) {
-                    queue.add(row-1);
-                    queue.add(col);
-                    queue.add(level + 1);
-                    queue.add(check);
-                    visited[row-1][col] = true;
-                } else if(info[row-1][col] == 0 && check == 1 && !visited2[row-1][col]) {
-                    queue.add(row-1);
-                    queue.add(col);
-                    queue.add(level + 1);
-                    queue.add(check);
-                    visited2[row-1][col] = true;
-                }
-            } catch(Exception e) {
-
-            }
-
-            try {
-                if(info[row][col+1] == 1 && check == 0 && !visited[row][col+1]) {//벽이고 깬적 없으면
-                    queue.add(row);
-                    queue.add(col+1);
-                    queue.add(level + 1);
-                    queue.add(check + 1);
-                    visited[row][col+1] = true;
-                } else if(info[row][col+1] == 0 && check == 0 && !visited[row][col+1]) {
-                    queue.add(row);
-                    queue.add(col+1);
-                    queue.add(level + 1);
-                    queue.add(check);
-                    visited[row][col+1] = true;
-                } else if(info[row][col+1] == 0 && check == 1 && !visited2[row][col+1]) {
-                    queue.add(row);
-                    queue.add(col+1);
-                    queue.add(level + 1);
-                    queue.add(check);
-                    visited2[row][col+1] = true;
-                }
-            } catch(Exception e) {
-
-            }
-
-            try {
-                if(info[row][col-1] == 1 && check == 0 && !visited[row][col-1]) {//벽이고 깬적 없으면
-                    queue.add(row);
-                    queue.add(col-1);
-                    queue.add(level + 1);
-                    queue.add(check + 1);
-                    visited[row][col-1] = true;
-                } else if(info[row][col-1] == 0 && check == 0 && !visited[row][col-1]) {
-                    queue.add(row);
-                    queue.add(col-1);
-                    queue.add(level + 1);
-                    queue.add(check);
-                    visited[row][col-1] = true;
-                } else if(info[row][col-1] == 0 && check == 1 && !visited2[row][col-1]) {
-                    queue.add(row);
-                    queue.add(col-1);
-                    queue.add(level + 1);
-                    queue.add(check);
-                    visited2[row][col-1] = true;
-                }
-            } catch(Exception e) {
-
             }
         }
 
-        if(answer == 0) {
-            System.out.println(-1);
-        } else {
-            System.out.println(answer);
-        }
+        System.out.println(answer);
     }
 
+    static class Node {
+        int x;
+        int y;
+        int move;
+        boolean breaked;
+
+        public Node(int x, int y, int move, boolean breaked) {
+            this.x = x;
+            this.y = y;
+            this.move = move;
+            this.breaked = breaked;
+        }
+    }
 }
