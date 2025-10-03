@@ -1,58 +1,87 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    static class Jewel implements Comparable<Jewel> {
-        int M;
-        int V;
-
-        public Jewel(int m, int v) {
-            M = m;
-            V = v;
-        }
-
-        @Override
-        public int compareTo(Jewel j) {
-            if(this.M == j.M) {
-                return this.V - j.V;
-            } else {
-                return this.M - j.M;
-            }
-        }
-    }
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
 
         List<Jewel> jewels = new ArrayList<>();
         for(int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine(), " ");
-            jewels.add(new Jewel(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())));
+            st = new StringTokenizer(br.readLine());
+            int M = Integer.parseInt(st.nextToken());
+            int V = Integer.parseInt(st.nextToken());
+            jewels.add(new Jewel(M, V));
         }
+
         Collections.sort(jewels);
 
-        List<Integer> bag = new ArrayList<>();
+        List<Integer> bags = new ArrayList<>();
+        Map<Integer, List<Integer>> map = new HashMap<>();
         for(int i = 0; i < K; i++) {
-            bag.add(Integer.parseInt(br.readLine()));
+            int C = Integer.parseInt(br.readLine());
+            bags.add(C);
+
+            if(!map.containsKey(C)) map.put(C, new ArrayList<>());
         }
-        Collections.sort(bag);
 
-        PriorityQueue<Integer> info = new PriorityQueue<>(Collections.reverseOrder());
+        Collections.sort(bags);
 
-        long answer = 0;
-        for(int i = 0, j = 0; i < bag.size(); i++) {
-            while(j < N && jewels.get(j).M <= bag.get(i)) {
-                info.offer(jewels.get(j).V);
-                j++;
+        for(Jewel jewel: jewels) {
+            int low = 0;
+            int high = bags.size();
+
+            while(low < high) {
+                int mid = low + (high - low) / 2;
+
+                if(bags.get(mid) >= jewel.M) {
+                    high = mid;
+                } else {
+                    low = mid + 1;
+                }
             }
 
-            if(!info.isEmpty())
-                answer += info.poll();
+            // low는 수용 가능한 첫 가방의 index
+            if(low != bags.size()) {
+                map.get(bags.get(low)).add(jewel.V);
+            }
         }
+
+        long answer = 0;
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for(int i = 0; i < bags.size(); i++) {
+            int bag = bags.get(i);
+
+            if(map.get(bag) != null) {
+                for(int V: map.get(bag)) {
+                    pq.offer(V);
+                }
+            }
+            map.remove(bag);
+
+            if(!pq.isEmpty())
+                answer += (long) pq.poll();
+        }
+
         System.out.println(answer);
+    }
+
+    static class Jewel implements Comparable<Jewel> {
+        int M;
+        int V;
+
+        public Jewel(int M, int V) {
+            this.M = M;
+            this.V = V;
+        }
+
+        public int compareTo(Jewel j) {
+            return j.V - this.V;
+        }
     }
 }
