@@ -43,8 +43,8 @@ class Solution {
         int M = key.length;
         int N = lock.length;
         
-        for(int k = N - 1; k >= -N + 1; k--) {
-            for(int l = N - 1; l >= -N + 1; l--) {
+        for(int k = M - 1; k >= -N + 1; k--) {
+            for(int l = M - 1; l >= -N + 1; l--) {
                 boolean flag = false;
                 loopI:
                 for(int i = 0; i < N; i++) {
