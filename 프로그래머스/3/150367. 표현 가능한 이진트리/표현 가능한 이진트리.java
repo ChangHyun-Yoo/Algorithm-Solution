@@ -1,56 +1,50 @@
 import java.util.*;
 class Solution {
     
-    static char[] chs;
-    static boolean result;
-    
     public int[] solution(long[] numbers) {
         int[] answer = new int[numbers.length];
-        for(int i = 0; i < numbers.length; i++) {
-            answer[i] = findAnswer(numbers[i]);
+        
+        for(int j = 0; j < numbers.length; j++) {
+            String bs = Long.toBinaryString(numbers[j]);
+            
+            int length = 0;
+            for(int i = 1; true; i++) {
+                if(bs.length() <= (int) Math.pow(2, i) - 1) {
+                    length = (int) Math.pow(2, i) - 1;
+                    break;
+                }
+            }
+            
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0; i < length - bs.length(); i++) {
+                sb.append("0");
+            }
+            sb.append(bs);
+            bs = sb.toString();
+            
+            if(bs.charAt(bs.length() / 2) == '0') {
+                answer[j] = 0;
+                continue;
+            }
+            if(dfs(0, bs.length(), bs, '1')) answer[j] = 1;
+            else answer[j] = 0;
         }
+        
         return answer;
     }
     
-    static int findAnswer(long n) {
-        if(n == 1) return 1;
+    static boolean dfs(int start, int end, String bs, char parent) {        
+        int half = (start + end) / 2;
+        char halfChar = bs.charAt(half);
+        if(parent == '0' && halfChar == '1') return false;
         
-        String b = Long.toBinaryString(n);
-        
-        int i = 1;
-        while(true) {
-            if(Math.pow(2, i) - 1 >= b.length()) break;
-            else i++;
+        if(start != half) {
+            if(!dfs(start, half, bs, halfChar)) return false;
+        }
+        if(half + 1 != end) {
+            if(!dfs(half + 1, end, bs, halfChar)) return false;
         }
         
-        long length = (long) Math.pow(2, i) - 1;
-        
-        while(b.length() != length) {
-            b = "0" + b;
-        }
-        chs = b.toCharArray();
-        
-        result = true;
-        start();
-        if(result) return 1;
-        else return 0;
-    }
-    
-    static void start() {
-        int start = chs.length / 2;
-        
-        if(chs[start] == '0') result = false;
-        check(start, start / 2);
-        check(start, 2*start - start / 2);
-    }
-    
-    static void check(int parent, int child) {
-        if(!result) return;
-        
-        if(chs[parent] == '0' && chs[child] == '1') result = false;
-        
-        if(Math.abs(parent - child) == 1) return;
-        check(child, child - Math.abs(parent - child) / 2);
-        check(child, child + Math.abs(parent - child) / 2);
+        return true;
     }
 }
