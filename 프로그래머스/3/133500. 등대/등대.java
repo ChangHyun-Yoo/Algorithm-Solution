@@ -1,29 +1,25 @@
 import java.util.*;
-
 class Solution {
     
-    static List<List<Integer>> roads = new ArrayList<>();
-    // 0 -> 끄는 경우, 1 -> 키는 경우
-    static int[][] results;
+    static int[][] dp;
+    static List<List<Integer>> roads;
     static boolean[] visited;
     
     public int solution(int n, int[][] lighthouse) {
-        for(int i = 0; i <= n; i++) {
+        dp = new int[n + 1][2];
+        roads = new ArrayList<>();
+        for(int i = 0; i < n + 1; i++) {
             roads.add(new ArrayList<>());
         }
-        results = new int[n + 1][2];
-        for(int[] r: results) {
-            Arrays.fill(r, Integer.MAX_VALUE);
+        for(int i = 0; i < lighthouse.length; i++) {
+            roads.get(lighthouse[i][0]).add(lighthouse[i][1]);
+            roads.get(lighthouse[i][1]).add(lighthouse[i][0]);
         }
         visited = new boolean[n + 1];
         
-        for(int[] l: lighthouse) {
-            roads.get(l[0]).add(l[1]);
-            roads.get(l[1]).add(l[0]);
-        }
-        
         dfs(1);
-        return Math.min(results[1][0], results[1][1]);
+        
+        return Math.min(dp[1][0], dp[1][1]);
     }
     
     static void dfs(int current) {
@@ -31,32 +27,22 @@ class Solution {
         
         int count = 0;
         for(int next: roads.get(current)) {
-            if(!visited[next]) {
-                count++;
-            }
+            if(!visited[next]) count++;
         }
         
         if(count == 0) {
-            results[current][0] = 0;
-            results[current][1] = 1;
-        } else {
-            List<Integer> ns = new ArrayList<>();
-            int offs = 0;
-            int forOn = 0;
-            for(int next: roads.get(current)) {
-                if(!visited[next]) {
-                    ns.add(next);
-                    dfs(next);
-                    // 끄는 경우, 무조건 켜져있어야한다.
-                    offs += results[next][1];
-                    // 키는 경우, 최솟값들을 더한다.
-                    forOn += Math.min(results[next][0], results[next][1]);
-                }
-            }
-            
-            results[current][0] = offs;
-            results[current][1] = forOn + 1;
+            dp[current][0] = 1;
+            dp[current][1] = 0;
+            return;
         }
         
+        for(int next: roads.get(current)) {
+            if(!visited[next]) {
+                dfs(next);
+                dp[current][0] += Math.min(dp[next][0], dp[next][1]);
+                dp[current][1] += dp[next][0];
+            }
+        }
+        dp[current][0]++;
     }
 }
