@@ -1,108 +1,72 @@
-import java.io.*;
+import java.awt.image.AreaAveragingScaleFilter;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    static List<List<Node>> road = new ArrayList<>();
-    static boolean[] visited;
-    static int[] min;
-
-    static class Node implements Comparable<Node> {
-        int place;
-        int dis;
-
-        public Node(int place, int dis) {
-            this.place = place;
-            this.dis = dis;
-        }
-
-        @Override
-        public int compareTo(Node n) {
-            return this.dis - n.dis;
-        }
-    }
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
         int X = Integer.parseInt(st.nextToken());
 
-        min = new int[N + 1];
-        visited = new boolean[N + 1];
+        List<List<Node>> roads = new ArrayList<>();
         for(int i = 0; i < N + 1; i++) {
-            road.add(new ArrayList<>());
+            roads.add(new ArrayList<>());
         }
-
         for(int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine(), " ");
-            int s = Integer.parseInt(st.nextToken());
-            int e = Integer.parseInt(st.nextToken());
-            int d = Integer.parseInt(st.nextToken());
+            st = new StringTokenizer(br.readLine());
+            int A = Integer.parseInt(st.nextToken());
+            int B = Integer.parseInt(st.nextToken());
+            int T = Integer.parseInt(st.nextToken());
 
-            road.get(s).add(new Node(e, d));
+            roads.get(A).add(new Node(B, T));
         }
 
-        int max = -1;
-        int[] way1 = new int[N + 1];
+        int[][] min = new int[N + 1][N + 1];
+        for(int[] m: min) {
+            Arrays.fill(m, Integer.MAX_VALUE);
+        }
+
         for(int i = 1; i < N + 1; i++) {
-            if(i != X) {
-                Arrays.fill(min, Integer.MAX_VALUE);
-                Arrays.fill(visited, false);
+            PriorityQueue<Node> pq = new PriorityQueue<>();
+            pq.offer(new Node(i, 0));
 
-                PriorityQueue<Node> pq = new PriorityQueue<>();
-                pq.offer(new Node(i, 0));
-                min[i] = 0;
-                while(!pq.isEmpty()) {
-                    Node now = pq.poll();
+            while(!pq.isEmpty()) {
+                Node now = pq.poll();
 
-                    if(visited[now.place]) {
-                        continue;
-                    }
+                if(now.dis > min[i][now.num]) continue;
+                min[i][now.num] = now.dis;
 
-                    visited[now.place] = true;
-
-                    for(Node cand: road.get(now.place)) {
-                        if(min[cand.place] > min[now.place] + cand.dis) {
-                            min[cand.place] = min[now.place] + cand.dis;
-                            pq.offer(new Node(cand.place, min[cand.place]));
-                        }
+                for(Node next: roads.get(now.num)) {
+                    if(min[i][next.num] > now.dis + next.dis) {
+                        min[i][next.num] = now.dis + next.dis;
+                        pq.offer(new Node(next.num, min[i][next.num]));
                     }
                 }
-                way1[i] = min[X];
             }
         }
-
-        Arrays.fill(min, Integer.MAX_VALUE);
-        Arrays.fill(visited, false);
-
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.offer(new Node(X, 0));
-        min[X] = 0;
-        while(!pq.isEmpty()) {
-            Node now = pq.poll();
-
-            if(visited[now.place]) {
-                continue;
-            }
-
-            visited[now.place] = true;
-
-            for(Node cand: road.get(now.place)) {
-                if(min[cand.place] > min[now.place] + cand.dis) {
-                    min[cand.place] = min[now.place] + cand.dis;
-                    pq.offer(new Node(cand.place, min[cand.place]));
-                }
-            }
-        }
-
-        int answer = -1;
+        
+        int max = 0;
         for(int i = 1; i < N + 1; i++) {
-            if(i != X && answer < min[i] + way1[i]) {
-                answer = min[i] + way1[i];
-            }
+            max = Math.max(max, min[i][X] + min[X][i]);
         }
-        System.out.println(answer);
+        System.out.println(max);
+    }
+
+    static class Node implements Comparable<Node> {
+        int num;
+        int dis;
+
+        public Node(int num, int dis) {
+            this.num = num;
+            this.dis = dis;
+        }
+
+        public int compareTo(Node n) {
+            return this.dis - n.dis;
+        }
     }
 }
