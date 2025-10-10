@@ -1,57 +1,45 @@
-import java.io.*;
+import java.awt.image.AreaAveragingScaleFilter;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    static int[][] dp;
-    static int[][] sums;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         int T = Integer.parseInt(br.readLine());
+
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < T; i++) {
+        for(int t = 0; t < T; t++) {
             int K = Integer.parseInt(br.readLine());
-            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-            int[] nums = new int[K];
 
-            for(int j = 0; j < K; j++) {
-                nums[j] = Integer.parseInt(st.nextToken());
+            int[] files = new int[K];
+            int[] sums = new int[K + 1];
+            int[][] dp = new int[K + 1][K + 1];
+            for(int[] d: dp) {
+                Arrays.fill(d, Integer.MAX_VALUE);
+            }
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for(int i = 0; i < K; i++) {
+                files[i] = Integer.parseInt(st.nextToken());
+                sums[i + 1] = sums[i] + files[i];
             }
 
-            dp = new int[K + 1][K + 1];
-            sums = new int[K + 1][K + 1];
-            for(int[] s: sums) {
-                Arrays.fill(s, -1);;
-            }
-            for(int j = 1; j < K + 1; j++) {
-                dp[j][j] = nums[j - 1];
-                sums[j][j] = 0;
-            }
-
-            for(int length = 1; length < K; length++) {
-                for(int k = 1; k + length <= K; k++) {
-                    if(length == 1) {
-                        dp[k][k + length] = dp[k][k] + dp[k + length][k + length];
-                        sums[k][k + length] = dp[k][k + length];
-                    } else {
-                        int min = Integer.MAX_VALUE;
-                        int index = 0;
-                        for(int l = 0; l < length; l++) {
-                            if(sums[k][k + l] + sums[k + l + 1][k + length] < min) {
-                                min = sums[k][k + l] + sums[k + l + 1][k + length];
-                                index = l;
-                            }
-                        }
-                        dp[k][k + length] = dp[k][k + index] + dp[k + index + 1][k + length];
-                        sums[k][k + length] = dp[k][k + length] + sums[k][k + index] + sums[k + index + 1][k + length];
-                    }
-                }
-            }
-
-            sb.append(sums[1][K]).append('\n');
+            sb.append(dp(0, K, files, dp, sums)).append('\n');
         }
-        System.out.println(sb);
+
+        System.out.print(sb.toString());
     }
 
+    static int dp(int s, int e, int[] files, int[][] dp, int[] sums) {
+        if(dp[s][e] != Integer.MAX_VALUE) return dp[s][e];
+        if(e - s == 1) return dp[s][e] = 0;
+
+        int min = Integer.MAX_VALUE;
+        for(int i = s + 1; i < e; i++) {
+            min = Math.min(min, dp(s, i, files, dp, sums) + dp(i, e, files, dp, sums) + sums[e] - sums[s]);
+        }
+
+        return dp[s][e] = min;
+    }
 }
