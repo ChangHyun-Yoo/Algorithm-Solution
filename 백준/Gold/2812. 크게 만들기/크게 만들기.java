@@ -1,32 +1,35 @@
-import java.io.*;
+import java.awt.image.AreaAveragingScaleFilter;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
-        String num = br.readLine();
-        char[] chars = num.toCharArray();
+
+        char[] chs = br.readLine().toCharArray();
 
         Deque<Character> deque = new ArrayDeque<>();
-        for(int i = 0; i < N; i++) {
 
-            while(K > 0 && !deque.isEmpty() && deque.getLast() < chars[i]) {
+        for(int i = 0; i < chs.length; i++) {
+
+            while(K > 0 && !deque.isEmpty() && deque.peekLast() < chs[i]) {
                 deque.removeLast();
                 K--;
             }
-            deque.addLast(chars[i]);
+            deque.addLast(chs[i]);
         }
 
         StringBuilder sb = new StringBuilder();
 
         while(deque.size() > K) {
-            sb.append(deque.removeFirst());
+            sb.append(deque.pollFirst());
         }
 
-        System.out.println(sb);
+        System.out.print(sb.toString());
     }
 }
