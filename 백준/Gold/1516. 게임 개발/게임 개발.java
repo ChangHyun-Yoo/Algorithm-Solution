@@ -1,57 +1,48 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    static int[] before;
-    static int[] time;
-    static int[] answer;
-    static List<List<Integer>> nexts = new ArrayList<>();
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         int N = Integer.parseInt(br.readLine());
-
-        before = new int[N + 1];
-        time = new int[N + 1];
-        answer = new int[N + 1];
-
+        int[] times = new int[N + 1];
+        int[] before = new int[N + 1];
+        List<List<Integer>> roads = new ArrayList<>();
         for(int i = 0; i < N + 1; i++) {
-            nexts.add(new ArrayList<>());
+            roads.add(new ArrayList<>());
         }
 
-        for(int i = 1; i <= N; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        for(int i = 1; i < N + 1; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
 
-            time[i] = Integer.parseInt(st.nextToken());
+            int time = Integer.parseInt(st.nextToken());
+            times[i] = time;
 
-            int b = 0;
             while(true) {
-                int j = Integer.parseInt(st.nextToken());
+                int b = Integer.parseInt(st.nextToken());
 
-                if(j == -1) break;
+                if(b == -1) break;
 
-                b++;
-                nexts.get(j).add(i);
+                before[i]++;
+                roads.get(b).add(i);
             }
-            before[i] = b;
         }
 
-        Queue<Integer> q = new LinkedList<>();
+        PriorityQueue<Node> pq = new PriorityQueue<>();
         for(int i = 1; i < before.length; i++) {
-            if(before[i] == 0) q.offer(i);
+            if(before[i] == 0) pq.offer(new Node(i, times[i]));
         }
-        while(!q.isEmpty()) {
-            int now = q.poll();
 
-            answer[now] = Math.max(answer[now], time[now]);
-            for(int next: nexts.get(now)) {
-                before[next]--;
-                answer[next] = Math.max(answer[next], answer[now] + time[next]);
+        int[] answer = new int[N + 1];
+        while(!pq.isEmpty()) {
+            Node now = pq.poll();
 
-                if(before[next] == 0) {
-                    q.offer(next);
-                }
+            answer[now.x] = now.time;
+
+            for(int next: roads.get(now.x)) {
+                if(--before[next] == 0) pq.offer(new Node(next, answer[now.x] + times[next]));
             }
         }
 
@@ -59,6 +50,20 @@ public class Main {
         for(int i = 1; i < answer.length; i++) {
             sb.append(answer[i]).append('\n');
         }
-        System.out.println(sb);
+        System.out.print(sb.toString());
+    }
+
+    static class Node implements Comparable<Node> {
+        int x;
+        int time;
+
+        public Node(int x, int time) {
+            this.x = x;
+            this.time = time;
+        }
+
+        public int compareTo(Node n) {
+            return this.time - n.time;
+        }
     }
 }
